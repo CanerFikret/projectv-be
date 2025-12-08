@@ -16,6 +16,13 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@config": ["src/config"],
+      "@common/*": ["src/common/*"],
+      "@core/*": ["src/core/*"],
+      "@crm/*": ["src/crm/*"],
+      "@prisma-client/*": ["prisma/client/*"]
+    }
   }
 }
