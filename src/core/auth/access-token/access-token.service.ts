@@ -1,0 +1,31 @@
+import { JwtService } from '@common/global-services/jwt/jwt.service';
+import { Injectable } from '@nestjs/common';
+import { AccessTokenPayloadDto } from './dto/auth-access-token-generate.dto';
+import { ConfigService } from '@nestjs/config';
+import { JwtAlgorithm, JwtKeyId } from '@common/global-services/jwt/jwt.type';
+import { instanceToPlain } from 'class-transformer';
+
+@Injectable()
+export class AccessTokenService {
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
+  ) {}
+
+  async generateAccessToken(
+    tokenPayloadDto: AccessTokenPayloadDto,
+  ): Promise<string> {
+    const token = this.jwtService.signAsync(instanceToPlain(tokenPayloadDto), {
+      secret: this.configService.getOrThrow<string>('JWT_KEY'),
+      algorithm: JwtAlgorithm.HS256,
+      keyid: JwtKeyId.V1,
+      issuer: this.configService.getOrThrow<string>('API_CODE'),
+      audience: [this.configService.getOrThrow<string>('API_CODE')],
+      expiresIn: Number(
+        this.configService.getOrThrow<number>('ACCESS_TOKEN_TTL'),
+      ),
+    });
+
+    return token;
+  }
+}
