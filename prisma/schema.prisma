@@ -5,8 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "./client"
+  provider     = "prisma-client"
+  output       = "./client"
   engineType   = "client"
   runtime      = "nodejs"
   moduleFormat = "cjs"
@@ -14,15 +14,106 @@ generator client {
 
 datasource db {
   provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-  id        String   @id @default(uuid(7))
-  email     String   @unique
-  password  String
-  nickName  String   
-  name      String
-  lastName  String?
+  id                    String                 @id @default(uuid(7))
+  email                 String                 @unique
+  password              String
+  passwordSalt          String
+  nickName              String
+  name                  String
+  lastName              String?
+  generatedAt           DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  ServerMemberships     UserServerMembership[] @relation("ServerMemberUser")
+  messages              Message[]
+  voiceRoomParticipants VoiceRoomParticipant[]
+
+  @@index([nickName])
+  @@map("users")
+}
+
+model UserServerMembership {
+  id       String @id @default(uuid(7))
+  user     User   @relation(fields: [userId], references: [id], name: "ServerMemberUser")
+  userId   String
+  server   Server @relation(fields: [serverId], references: [id], name: "ServerMember")
+  serverId String
+
+  @@unique([userId, serverId])
+  @@map("user_server_memberships")
+}
+
+model Server {
+  id              String                 @id @default(uuid(7))
+  name            String
+  description     String?
+  UserMemberships UserServerMembership[] @relation("ServerMember")
+  channels        Channel[]              @relation("ServerChannels")
+  generatedAt     DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+
+  @@index([name])
+  @@map("servers")
+}
+
+model Channel {
+  id          String   @id @default(uuid(7))
+  name        String
+  server      Server   @relation(name: "ServerChannels", fields: [serverId], references: [id])
+  serverId    String
+  rooms       Room[]   @relation("ChannelRooms")
+  description String?
   generatedAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt   DateTime @updatedAt
+
+  @@unique([serverId, name], name: "uniq_server_channel_name")
+  @@index([serverId])
+  @@map("channels")
+}
+
+model Room {
+  id                    String                 @id @default(uuid(7))
+  name                  String
+  channel               Channel                @relation(name: "ChannelRooms", fields: [channelId], references: [id])
+  channelId             String
+  type                  Int /// 0 = text, 1 = voice, etc. 
+  description           String?
+  generatedAt           DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  messages              Message[]
+  voiceRoomParticipants VoiceRoomParticipant[]
+
+  @@unique([channelId, name], name: "uniq_channel_room_name")
+  @@index([channelId])
+  @@map("rooms")
+}
+
+model Message {
+  id          String   @id @default(uuid(7))
+  room        Room     @relation(fields: [roomId], references: [id])
+  roomId      String
+  author      User     @relation(fields: [authorId], references: [id])
+  authorId    String
+  content     String
+  generatedAt DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([roomId, generatedAt])
+  @@map("messages")
+}
+
+model VoiceRoomParticipant {
+  id          String    @id @default(uuid(7))
+  voiceRoom   Room      @relation(fields: [voiceRoomId], references: [id])
+  voiceRoomId String
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String
+  joinedAt    DateTime  @default(now())
+  leftAt      DateTime?
+
+  @@unique([voiceRoomId, userId])
+  @@map("voice_room_participants")
 }

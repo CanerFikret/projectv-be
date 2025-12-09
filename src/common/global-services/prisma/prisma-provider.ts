@@ -2,8 +2,8 @@ import {
   getTransactionHostToken,
   TransactionHost,
 } from '@nestjs-cls/transactional';
-import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { Inject } from '@nestjs/common';
+import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { PrismaService } from './prisma.service';
 
 export type PrismaTransactionHost = TransactionHost<
