@@ -17,7 +17,7 @@ import { v7 as uuid7 } from 'uuid';
 import { RefreshTokenService } from './refresh-token/refresh-token.service';
 import { AuthTokenGenerateResultDto } from './dto/auth-token-generate-result.dto';
 import { AccessTokenService } from './access-token/access-token.service';
-import { AccessTokenPayloadDto } from './access-token/dto/auth-access-token-generate.dto';
+import { AccessTokenPayloadDto } from './access-token/dto/auth-access-token-payload.dto';
 import { RefreshTokenPayloadDto } from './refresh-token/dto/refresh-token-payload.dto';
 import { AuthTokensGenerateResultDto } from './dto/auth-tokens-generate-result.dto';
 import { AuthLoginResultDto } from './dto/auth-login-result.dto';
