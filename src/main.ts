@@ -10,10 +10,15 @@ async function bootstrap() {
     .setTitle('ProjectV API')
     .setDescription('The ProjectV API documentation')
     .setVersion('1.0')
+    .addBearerAuth()
     .addTag('ProjectV')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, documentFactory);
+  SwaggerModule.setup('api', app, documentFactory, {
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
+  });
 
   app.useGlobalInterceptors(new MeasureTimeInterceptor());
 
