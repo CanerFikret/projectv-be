@@ -27,35 +27,40 @@ model User {
   lastName              String?
   generatedAt           DateTime               @default(now())
   updatedAt             DateTime               @updatedAt
-  ServerMemberships     UserServerMembership[] @relation("ServerMemberUser")
+  serverMemberships     UserServerMembership[] @relation("ServerMemberUser")
   messages              Message[]
   voiceRoomParticipants VoiceRoomParticipant[]
+  servers               Server[]
 
   @@index([nickName])
   @@map("users")
 }
 
 model UserServerMembership {
-  id       String @id @default(uuid(7))
-  user     User   @relation(fields: [userId], references: [id], name: "ServerMemberUser")
-  userId   String
-  server   Server @relation(fields: [serverId], references: [id], name: "ServerMember")
-  serverId String
+  id        String    @id @default(uuid(7))
+  user      User      @relation(fields: [userId], references: [id], name: "ServerMemberUser")
+  userId    String
+  server    Server    @relation(fields: [serverId], references: [id], name: "ServerMember")
+  serverId  String
+  deletedAt DateTime?
 
   @@unique([userId, serverId])
   @@map("user_server_memberships")
 }
 
 model Server {
-  id              String                 @id @default(uuid(7))
-  name            String
-  description     String?
-  UserMemberships UserServerMembership[] @relation("ServerMember")
-  channels        Channel[]              @relation("ServerChannels")
-  generatedAt     DateTime               @default(now())
-  updatedAt       DateTime               @updatedAt
+  id                String                 @id @default(uuid(7))
+  code              String                 @unique // unique server code for invitations
+  name              String
+  description       String?
+  userMemberships   UserServerMembership[] @relation("ServerMember")
+  channels          Channel[]              @relation("ServerChannels")
+  generatedBy       User                   @relation(fields: [generatedByUserId], references: [id])
+  generatedByUserId String
+  generatedAt       DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
 
-  @@index([name])
+  @@index([name, generatedByUserId])
   @@map("servers")
 }
 

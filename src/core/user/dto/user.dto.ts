@@ -12,14 +12,14 @@ export class UserDto {
   }
 }
 
-export class userWithoutPassword {
+export class UserWithoutPasswordDto {
   id: string;
   email: string;
   nickName: string;
   name: string;
   lastName: string | null;
 
-  constructor(partial: Partial<userWithoutPassword>) {
-    Object.assign(this, partial);
+  constructor(userWithoutPasswordDto: Partial<UserWithoutPasswordDto>) {
+    Object.assign(this, userWithoutPasswordDto);
   }
 }
