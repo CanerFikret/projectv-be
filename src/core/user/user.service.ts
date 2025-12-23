@@ -6,7 +6,7 @@ import {
   PrismaTransactionHost,
 } from '@common/global-services/prisma/prisma-provider';
 import { Injectable } from '@nestjs/common';
-import { UserDto, userWithoutPassword } from './dto/user.dto';
+import { UserDto, UserWithoutPasswordDto } from './dto/user.dto';
 
 @Injectable()
 export class UserService {
@@ -50,7 +50,7 @@ export class UserService {
     return userDto;
   }
 
-  async getByIdOrThrow(userId: string): Promise<userWithoutPassword> {
+  async getByIdOrThrow(userId: string): Promise<UserWithoutPasswordDto> {
     const user = await this.txHost.tx.user
       .findUnique({
         where: { id: userId },
@@ -68,7 +68,7 @@ export class UserService {
     if (!user) {
       throw new ServiceException(ErrorType.NotFound);
     }
-    return new userWithoutPassword({
+    return new UserWithoutPasswordDto({
       id: user.id,
       email: user.email,
       nickName: user.nickName,

@@ -1,4 +1,4 @@
-import { userWithoutPassword } from '@core/user/dto/user.dto';
+import { UserWithoutPasswordDto } from '@core/user/dto/user.dto';
 import { Injectable } from '@nestjs/common';
 import { ClsService } from 'nestjs-cls';
 
@@ -12,11 +12,11 @@ export class AuthContext {
 
   constructor(private readonly cls: ClsService) {}
 
-  set user(systemUser: userWithoutPassword) {
+  set user(systemUser: UserWithoutPasswordDto) {
     this.cls.set(this.keys.user, systemUser);
   }
 
-  get user(): userWithoutPassword {
+  get user(): UserWithoutPasswordDto {
     return this.cls.get(this.keys.user);
   }
 

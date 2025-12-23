@@ -2,6 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { MeasureTimeInterceptor } from '@common/interceptors/measure-time.interceptor';
+import { GeneralExceptionFilter } from '@common/filters/general-exception.filter';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -20,7 +22,15 @@ async function bootstrap() {
     },
   });
 
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+    }),
+  );
+
   app.useGlobalInterceptors(new MeasureTimeInterceptor());
+
+  app.useGlobalFilters(new GeneralExceptionFilter());
 
   await app.listen(process.env.PORT ?? 3000);
 }
